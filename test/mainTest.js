@@ -12,19 +12,21 @@ describe("Rill/Auth", function () {
 			Rill()
 				.use(session())
 				.use(auth())
-				.get("/login", respond(200, function (req, res) {
-					assert(!this.isLoggedIn());
-					assert(this.isLoggedOut());
-					this.login({ id: 1 });
-					assert(this.isLoggedIn());
-					assert(!this.isLoggedOut());
+				.get("/login", respond(200, function (ctx) {
+					assert(!ctx.isLoggedIn());
+					assert(ctx.isLoggedOut());
+					ctx.login({ id: 1 });
+					assert.deepEqual(ctx.user, { id: 1 });
+					assert(ctx.isLoggedIn());
+					assert(!ctx.isLoggedOut());
 				}))
-				.get("/logout", respond(200, function (req, res) {
-					assert(this.isLoggedIn());
-					assert(!this.isLoggedOut());
-					this.logout();
-					assert(!this.isLoggedIn());
-					assert(this.isLoggedOut());
+				.get("/logout", respond(200, function (ctx) {
+					assert(ctx.isLoggedIn());
+					assert(!ctx.isLoggedOut());
+					assert.deepEqual(ctx.user, { id: 1 });
+					ctx.logout();
+					assert(!ctx.isLoggedIn());
+					assert(ctx.isLoggedOut());
 				}))
 				.get("/login-restricted", auth.isLoggedIn(), respond(200))
 				.get("/logout-restricted", auth.isLoggedOut(), respond(200))
@@ -79,8 +81,8 @@ describe("Rill/Auth", function () {
 });
 
 function respond (status, test) {
-	return function (req, res) {
-		res.status = status;
-		if (typeof test === "function") test.call(this, req, res);
+	return function (ctx) {
+		ctx.res.status = status;
+		if (typeof test === "function") test(ctx);
 	};
 }
