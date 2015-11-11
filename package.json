@@ -1,6 +1,6 @@
 {
   "name": "@rill/auth",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Simple session login and logout for Rill.",
   "author": "Dylan Piercey <pierceydylan@gmail.com>",
   "main": "index.js",
@@ -16,9 +16,6 @@
     "logout",
     "rill"
   ],
-  "peerDependencies": {
-    "@rill/session": "0.x"
-  },
   "devDependencies": {
     "@rill/session": "^0.8.0",
     "gulp": "^3.9.0",

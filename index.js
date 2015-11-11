@@ -7,6 +7,10 @@ function auth (options) {
 	return function authMiddleware (ctx, next) {
 		var req = ctx.req;
 
+		if (!req.session) {
+			throw new Error("@rill/auth requires a session to work. Check out @rill/session.")
+		}
+
 		if (req.session.user) {
 			ctx.user = req.session.user;
 		}
