@@ -9,7 +9,6 @@ function auth (options) {
 		var session = req.session;
 
 		if (!session) throw new Error("@rill/auth requires a session to work. Check out @rill/session.")
-
 		if (session.has("user")) ctx.locals.user = req.session.get("user");
 
 		/**
