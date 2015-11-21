@@ -1,6 +1,6 @@
 {
   "name": "@rill/auth",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Simple session login and logout for Rill.",
   "author": "Dylan Piercey <pierceydylan@gmail.com>",
   "main": "index.js",
