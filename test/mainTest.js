@@ -1,14 +1,12 @@
 var assert  = require("assert");
-var agent   = require("./agent");
+var agent   = require("supertest").agent;
 var Rill    = require("rill");
 var session = require("@rill/session");
 var auth    = require("../");
 
 describe("Rill/Auth", function () {
-	after(agent.clear);
-
 	it("should error without a session", function (done) {
-		var request = agent.create(
+		var request = agent(
 			Rill()
 				.use(function (ctx, next) {
 					return next()
@@ -16,13 +14,14 @@ describe("Rill/Auth", function () {
 						.catch(done.bind(null, null))
 				})
 				.use(auth())
+				.listen()
 		);
 
 		request.get("/").end(function () {})
 	});
 
 	it("should work", function (done) {
-		var request = agent.create(
+		var request = agent(
 			Rill()
 				.use(session())
 				.use(auth())
@@ -30,20 +29,21 @@ describe("Rill/Auth", function () {
 					assert(!ctx.isLoggedIn());
 					assert(ctx.isLoggedOut());
 					ctx.login({ id: 1 });
-					assert.deepEqual(ctx.user, { id: 1 });
+					assert.deepEqual(ctx.locals.user, { id: 1 });
 					assert(ctx.isLoggedIn());
 					assert(!ctx.isLoggedOut());
 				}))
 				.get("/logout", respond(200, function (ctx) {
 					assert(ctx.isLoggedIn());
 					assert(!ctx.isLoggedOut());
-					assert.deepEqual(ctx.user, { id: 1 });
+					assert.deepEqual(ctx.locals.user, { id: 1 });
 					ctx.logout();
 					assert(!ctx.isLoggedIn());
 					assert(ctx.isLoggedOut());
 				}))
 				.get("/login-restricted", auth.isLoggedIn(), respond(200))
 				.get("/logout-restricted", auth.isLoggedOut(), respond(200))
+				.listen()
 		);
 
 		Promise.all([

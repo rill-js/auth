@@ -5,43 +5,41 @@ module.exports = auth;
  */
 function auth (options) {
 	return function authMiddleware (ctx, next) {
-		var req = ctx.req;
+		var req     = ctx.req;
+		var session = req.session;
 
-		if (!req.session) {
-			throw new Error("@rill/auth requires a session to work. Check out @rill/session.")
-		}
+		if (!session) throw new Error("@rill/auth requires a session to work. Check out @rill/session.")
 
-		if (req.session.user) {
-			ctx.user = req.session.user;
-		}
+		if (session.has("user")) ctx.locals.user = req.session.get("user");
 
 		/**
 		 * Login a user and save them in the rill session.
 		 */
 		ctx.login = function login (user) {
-			ctx.user = req.session.user = user;
+			ctx.locals.user = user;
+			session.set("user", user);
 		};
 
 		/**
 		 * Remove a user from a rill session.
 		 */
 		ctx.logout = function logout () {
-			delete req.session.user;
-			delete ctx.user;
+			delete ctx.locals.user;
+			session.delete("user");
 		};
 
 		/**
 		 * Check if a user is logged in.
 		 */
 		ctx.isLoggedIn = function isLoggedIn () {
-			return ctx.user != null;
+			return ctx.locals.user != null;
 		};
 
 		/**
 		 * Check if a user is logged out.
 		 */
 		ctx.isLoggedOut = function isLoggedOut () {
-			return ctx.user == null;
+			return ctx.locals.user == null;
 		};
 
 		return next();

@@ -25,8 +25,8 @@ app.use(function (ctx, next) {
 	ctx.login(user);
 
 	// User is attached to session and context.
-	ctx.user === user; // true
-	ctx.req.session.user === user; // true
+	ctx.locals.user === user; // true
+	ctx.req.session.get("user") === user; // true
 
 	// Test if a user is logged in.
 	ctx.isLoggedIn(); // true
