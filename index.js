@@ -5,11 +5,10 @@ module.exports = auth;
  */
 function auth (options) {
 	return function authMiddleware (ctx, next) {
-		var req     = ctx.req;
-		var session = req.session;
+		var session = ctx.session;
 
 		if (!session) throw new Error("@rill/auth requires a session to work. Check out @rill/session.")
-		if (session.has("user")) ctx.locals.user = req.session.get("user");
+		if (session.has("user")) ctx.locals.user = session.get("user");
 
 		/**
 		 * Login a user and save them in the rill session.
