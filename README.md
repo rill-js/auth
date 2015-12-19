@@ -10,7 +10,7 @@ npm install @rill/auth
 
 # Example
 
-```javascript
+```js
 const rill    = require("rill");
 const app     = rill();
 const session = require("@rill/session");
@@ -43,6 +43,35 @@ app.get("/a", auth.isLoggedIn(), ...);
 app.get("/b", auth.isLoggedOut(), ...);
 ```
 
+# Options
+
+```js
+// All options are passed the @rill/session cache (https://github.com/DylanPiercey/receptacle#user-content-setkey-value-options).
+// Interally
+// To enable a login that automatically refreshes and expires after 1 hour of inactivity you can use:
+{
+	"ttl": "1 hour",
+	"refresh": true
+}
+```
+
+# Utilities
+
+## auth.isLoggedIn({ else })
+Creates a middleware that will only continue if a user is logged in.
+If the `else` option is supplied it will redirect when the user is not logged in.
+
+```js
+app.use(auth.isLoggedIn({ else: "/login" }));
+```
+
+## auth.isLoggedOut({ else })
+Creates a middleware that will only continue if a user is logged out.
+If the `else` option is supplied it will redirect when the user is logged in.
+
+```js
+app.use(auth.isLoggedOut({ else: "/dashboard" }));
+```
 
 ### Contributions
 

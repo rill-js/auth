@@ -4,6 +4,8 @@ module.exports = auth;
  * Creates a Middleware function that attaches a session user to the context.
  */
 function auth (options) {
+	options = options || {};
+
 	return function authMiddleware (ctx, next) {
 		var session = ctx.session;
 
@@ -15,7 +17,7 @@ function auth (options) {
 		 */
 		ctx.login = function login (user) {
 			ctx.locals.user = user;
-			session.set("user", user);
+			session.set("user", user, options);
 		};
 
 		/**
@@ -50,14 +52,16 @@ function auth (options) {
 auth.isLoggedIn = function isLoggedIn (options) {
 	return function isLoggedInMiddleware (ctx, next) {
 		if (ctx.isLoggedIn()) return next();
+		else if (options && options.else) ctx.res.redirect(options.else);
 	}
 };
 
 /**
  * Creates a middleware that only proceeds if a user is not logged in.
  */
-auth.isLoggedOut = function isLoggedOut () {
+auth.isLoggedOut = function isLoggedOut (options) {
 	return function isLoggedOutMiddleware (ctx, next) {
 		if (ctx.isLoggedOut()) return next();
+		else if (options && options.else) ctx.res.redirect(options.else);
 	}
 };
