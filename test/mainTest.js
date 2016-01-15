@@ -1,7 +1,6 @@
 var assert  = require("assert");
 var agent   = require("supertest").agent;
 var Rill    = require("rill");
-var session = require("@rill/session");
 var auth    = require("../");
 
 describe("Rill/Auth", function () {
@@ -23,7 +22,6 @@ describe("Rill/Auth", function () {
 	it("should work", function (done) {
 		var request = agent(
 			Rill()
-				.use(session())
 				.use(auth())
 				.get("/login", respond(200, function (ctx) {
 					assert(!ctx.isLoggedIn());
@@ -61,7 +59,7 @@ describe("Rill/Auth", function () {
 				.get("/login")
 				.expect(200);
 		})
-		.then(function () {
+		.then(function (res) {
 			// Check login.
 			return Promise.all([
 				request
@@ -70,7 +68,7 @@ describe("Rill/Auth", function () {
 				request
 					.get("/logout-restricted")
 					.expect(404)
-			]);	
+			]);
 		})
 		.then(function () {
 			// Trigger logout.
@@ -87,7 +85,7 @@ describe("Rill/Auth", function () {
 				request
 					.get("/logout-restricted")
 					.expect(200)
-			]);	
+			]);
 		})
 		.then(done.bind(null, null))
 		.catch(done)

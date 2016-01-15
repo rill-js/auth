@@ -1,23 +1,37 @@
+var ms         = require("ms");
 module.exports = auth;
 
 /**
  * Creates a Middleware function that attaches a session user to the context.
  */
 function auth (options) {
-	options = options || {};
+	options     = options || {};
+	var ID      = options.key || "rill_auth";
+	var ttl     = options.ttl;
+	var refresh = options.refresh;
+	if (typeof ttl === "string") ttl = ms(ttl);
 
 	return function authMiddleware (ctx, next) {
-		var session = ctx.session;
+		var req = ctx.req;
+		var res = ctx.res;
+		var cookieOptions = {};
 
-		if (!session) throw new Error("@rill/auth requires a session to work. Check out @rill/session.")
-		if (session.has("user")) ctx.locals.user = session.get("user");
+		if (req.cookies[ID]) {
+			ctx.locals.user = JSON.parse(req.cookies[ID]);
+
+			if (refresh) {
+				if (ttl) cookieOptions.expires = new Date(new Date + ttl);
+				res.cookie(id, req.cookies[ID], cookieOptions);
+			}
+		}
 
 		/**
 		 * Login a user and save them in the rill session.
 		 */
 		ctx.login = function login (user) {
 			ctx.locals.user = user;
-			session.set("user", user, options);
+			if (ttl) cookieOptions.expires = new Date(new Date + ttl);
+			res.cookie(ID, JSON.stringify(user), cookieOptions);
 		};
 
 		/**
@@ -25,7 +39,7 @@ function auth (options) {
 		 */
 		ctx.logout = function logout () {
 			delete ctx.locals.user;
-			session.delete("user");
+			res.clearCookie(ID);
 		};
 
 		/**

@@ -13,10 +13,8 @@ npm install @rill/auth
 ```js
 const rill    = require("rill");
 const app     = rill();
-const session = require("@rill/session");
 const auth    = require("@rill/auth");
 
-app.use(session());
 app.use(auth());
 app.use(function (ctx, next) {
 	var user = ...;
@@ -24,15 +22,14 @@ app.use(function (ctx, next) {
 	// A user can be anything.
 	ctx.login(user);
 
-	// User is attached to session and context.
+	// User is attached to and a cookie created.
 	ctx.locals.user === user; // true
-	ctx.session.get("user") === user; // true
 
 	// Test if a user is logged in.
 	ctx.isLoggedIn(); // true
 	ctx.isLoggedOut(); // false
 
-	// Removes the user from the session.
+	// Removes the user cookie.
 	ctx.logout();
 });
 
@@ -46,10 +43,9 @@ app.get("/b", auth.isLoggedOut(), ...);
 # Options
 
 ```js
-// All options are passed the @rill/session cache (https://github.com/DylanPiercey/receptacle#user-content-setkey-value-options).
-// Interally
 // To enable a login that automatically refreshes and expires after 1 hour of inactivity you can use:
 {
+	"key": "different-cookie-key", // change cookie name
 	"ttl": "1 hour",
 	"refresh": true
 }
