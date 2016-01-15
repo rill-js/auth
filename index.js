@@ -1,3 +1,4 @@
+"use strict";
 var ms         = require("ms");
 module.exports = auth;
 
@@ -20,8 +21,8 @@ function auth (options) {
 			ctx.locals.user = JSON.parse(req.cookies[ID]);
 
 			if (refresh) {
-				if (ttl) cookieOptions.expires = new Date(new Date + ttl);
-				res.cookie(id, req.cookies[ID], cookieOptions);
+				if (ttl) cookieOptions.expires = new Date(+new Date + ttl);
+				res.cookie(ID, req.cookies[ID], cookieOptions);
 			}
 		}
 
@@ -30,7 +31,7 @@ function auth (options) {
 		 */
 		ctx.login = function login (user) {
 			ctx.locals.user = user;
-			if (ttl) cookieOptions.expires = new Date(new Date + ttl);
+			if (ttl) cookieOptions.expires = new Date(+new Date + ttl);
 			res.cookie(ID, JSON.stringify(user), cookieOptions);
 		};
 
