@@ -4,21 +4,6 @@ var Rill    = require("rill");
 var auth    = require("../");
 
 describe("Rill/Auth", function () {
-	it("should error without a session", function (done) {
-		var request = agent(
-			Rill()
-				.use(function (ctx, next) {
-					return next()
-						.then(done.bind(null, new Error("No Error")))
-						.catch(done.bind(null, null))
-				})
-				.use(auth())
-				.listen()
-		);
-
-		request.get("/").end(function () {})
-	});
-
 	it("should work", function (done) {
 		var request = agent(
 			Rill()

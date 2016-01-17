@@ -6,31 +6,30 @@ module.exports = auth;
  * Creates a Middleware function that attaches a session user to the context.
  */
 function auth (options) {
-	options     = options || {};
-	var ID      = options.key || "rill_auth";
-	var ttl     = options.ttl;
-	var refresh = options.refresh;
+	options       = options || {};
+	var ID        = options.key || "rill_auth";
+	var ttl       = options.ttl;
+	var refresh   = options.refresh;
+	var didLogin  = false;
+
 	if (typeof ttl === "string") ttl = ms(ttl);
 
 	return function authMiddleware (ctx, next) {
-		var req = ctx.req;
-		var res = ctx.res;
-		var cookieOptions = {};
+		var req           = ctx.req;
+		var res           = ctx.res;
+		var locals        = ctx.locals;
+		var cookieOptions = { path: "/" };
 
-		if (req.cookies[ID]) {
-			ctx.locals.user = JSON.parse(req.cookies[ID]);
-
-			if (refresh) {
-				if (ttl) cookieOptions.expires = new Date(+new Date + ttl);
-				res.cookie(ID, req.cookies[ID], cookieOptions);
-			}
-		}
+		locals.user = req.cookies[ID]
+			? JSON.parse(req.cookies[ID])
+			: undefined;
 
 		/**
 		 * Login a user and save them in the rill session.
 		 */
 		ctx.login = function login (user) {
-			ctx.locals.user = user;
+			didLogin    = true;
+			locals.user = user;
 			if (ttl) cookieOptions.expires = new Date(+new Date + ttl);
 			res.cookie(ID, JSON.stringify(user), cookieOptions);
 		};
@@ -39,25 +38,30 @@ function auth (options) {
 		 * Remove a user from a rill session.
 		 */
 		ctx.logout = function logout () {
-			delete ctx.locals.user;
-			res.clearCookie(ID);
+			locals.user = undefined;
+			res.clearCookie(ID, cookieOptions);
 		};
 
 		/**
 		 * Check if a user is logged in.
 		 */
 		ctx.isLoggedIn = function isLoggedIn () {
-			return ctx.locals.user != null;
+			return locals.user != null;
 		};
 
 		/**
 		 * Check if a user is logged out.
 		 */
 		ctx.isLoggedOut = function isLoggedOut () {
-			return ctx.locals.user == null;
+			return locals.user == null;
 		};
 
-		return next();
+		return next().then(function () {
+			if (refresh && locals.user && !didLogin) {
+				if (ttl) cookieOptions.expires = new Date(+new Date + ttl);
+				res.cookie(ID, req.cookies[ID], cookieOptions);
+			}
+		});
 	}
 }
 
