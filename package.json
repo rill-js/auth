@@ -1,10 +1,12 @@
 {
   "name": "@rill/auth",
-  "version": "0.8.2",
+  "version": "1.0.0",
   "description": "Simple session login and logout for Rill.",
   "author": "Dylan Piercey <pierceydylan@gmail.com>",
   "main": "index.js",
   "license": "MIT",
+  "homepage": "https://github.com/rill-js/auth",
+  "bugs": "https://github.com/rill-js/auth/issues",
   "repository": {
     "type": "git",
     "url": "https://github.com/rill-js/auth"
@@ -17,12 +19,27 @@
     "rill"
   ],
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-mocha": "^2.1.3",
-    "rill": "^0.4.16",
-    "supertest": "^1.1.0"
+    "gulp": "^3.9.1",
+    "gulp-mocha": "^2.2.0",
+    "rill": "^0.5.6",
+    "snazzy": "^3.0.0",
+    "standard": "^6.0.8",
+    "supertest": "^1.2.0"
   },
   "dependencies": {
     "ms": "^0.7.1"
+  },
+  "scripts": {
+    "test": "standard --verbose | snazzy && gulp test"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach"
+    ]
   }
 }

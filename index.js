@@ -1,86 +1,86 @@
-"use strict";
-var ms         = require("ms");
-module.exports = auth;
+'use strict'
+var ms = require('ms')
+module.exports = auth
 
 /**
  * Creates a Middleware function that attaches a session user to the context.
  */
 function auth (options) {
-	options       = options || {};
-	var ID        = options.key || "rill_auth";
-	var ttl       = options.ttl;
-	var refresh   = options.refresh;
-	var didLogin  = false;
+  options = options || {}
+  var ID = options.key || 'rill_auth'
+  var ttl = options.ttl
+  var refresh = options.refresh
+  var didLogin = false
 
-	if (typeof ttl === "string") ttl = ms(ttl);
+  if (typeof ttl === 'string') ttl = ms(ttl)
 
-	return function authMiddleware (ctx, next) {
-		var req           = ctx.req;
-		var res           = ctx.res;
-		var locals        = ctx.locals;
-		var cookieOptions = { path: "/" };
+  return function authMiddleware (ctx, next) {
+    var req = ctx.req
+    var res = ctx.res
+    var locals = ctx.locals
+    var cookieOptions = { path: '/' }
 
-		locals.user = req.cookies[ID]
-			? JSON.parse(req.cookies[ID])
-			: undefined;
+    locals.user = req.cookies[ID]
+      ? JSON.parse(req.cookies[ID])
+      : undefined
 
-		/**
-		 * Login a user and save them in the rill session.
-		 */
-		ctx.login = function login (user) {
-			didLogin    = true;
-			locals.user = user;
-			if (ttl) cookieOptions.expires = new Date(+new Date + ttl);
-			res.cookie(ID, JSON.stringify(user), cookieOptions);
-		};
+    /**
+     * Login a user and save them in the rill session.
+     */
+    ctx.login = function login (user) {
+      didLogin = true
+      locals.user = user
+      if (ttl) cookieOptions.expires = new Date(+new Date() + ttl)
+      res.cookie(ID, JSON.stringify(user), cookieOptions)
+    }
 
-		/**
-		 * Remove a user from a rill session.
-		 */
-		ctx.logout = function logout () {
-			locals.user = undefined;
-			res.clearCookie(ID, cookieOptions);
-		};
+    /**
+     * Remove a user from a rill session.
+     */
+    ctx.logout = function logout () {
+      locals.user = undefined
+      res.clearCookie(ID, cookieOptions)
+    }
 
-		/**
-		 * Check if a user is logged in.
-		 */
-		ctx.isLoggedIn = function isLoggedIn () {
-			return locals.user != null;
-		};
+    /**
+     * Check if a user is logged in.
+     */
+    ctx.isLoggedIn = function isLoggedIn () {
+      return locals.user != null
+    }
 
-		/**
-		 * Check if a user is logged out.
-		 */
-		ctx.isLoggedOut = function isLoggedOut () {
-			return locals.user == null;
-		};
+    /**
+     * Check if a user is logged out.
+     */
+    ctx.isLoggedOut = function isLoggedOut () {
+      return locals.user == null
+    }
 
-		return next().then(function () {
-			if (refresh && locals.user && !didLogin) {
-				if (ttl) cookieOptions.expires = new Date(+new Date + ttl);
-				res.cookie(ID, req.cookies[ID], cookieOptions);
-			}
-		});
-	}
+    return next().then(function () {
+      if (refresh && locals.user && !didLogin) {
+        if (ttl) cookieOptions.expires = new Date(+new Date() + ttl)
+        res.cookie(ID, req.cookies[ID], cookieOptions)
+      }
+    })
+  }
 }
 
 /**
  * Creates a middleware that only proceeds if a user is logged in.
  */
 auth.isLoggedIn = function isLoggedIn (options) {
-	return function isLoggedInMiddleware (ctx, next) {
-		if (ctx.isLoggedIn()) return next();
-		else if (options && options.else) ctx.res.redirect(options.else);
-	}
-};
+  return function isLoggedInMiddleware (ctx, next) {
+    if (ctx.isLoggedIn()) return next()
+    else if (options && options.else) ctx.res.redirect(options.else)
+  }
+}
 
 /**
  * Creates a middleware that only proceeds if a user is not logged in.
  */
 auth.isLoggedOut = function isLoggedOut (options) {
-	return function isLoggedOutMiddleware (ctx, next) {
-		if (ctx.isLoggedOut()) return next();
-		else if (options && options.else) ctx.res.redirect(options.else);
-	}
-};
+  return function isLoggedOutMiddleware (ctx, next) {
+    if (ctx.isLoggedOut()) return next()
+    else if (options && options.else) ctx.res.redirect(options.else)
+  }
+}
