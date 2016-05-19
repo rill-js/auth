@@ -39,7 +39,7 @@ function auth (options) {
      */
     ctx.logout = function logout () {
       locals.user = undefined
-      res.clearCookie(ID)
+      res.clearCookie(ID, cookieOptions)
     }
 
     /**
