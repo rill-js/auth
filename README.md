@@ -1,12 +1,37 @@
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-[![Chat about Rill at https://gitter.im/rill-js/rill](https://badges.gitter.im/rill-js/rill.svg)](https://gitter.im/rill-js/rill?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+<h1 align="center">
+  <!-- Logo -->
+  <img src="https://raw.githubusercontent.com/rill-js/rill/master/Rill-Icon.jpg" alt="Rill"/>
+  <br/>
+  @rill/auth
+	<br/>
 
-# Rill Auth
-Simple session login and logout for Rill.
+  <!-- Stability -->
+  <a href="https://nodejs.org/api/documentation.html#documentation_stability_index">
+    <img src="https://img.shields.io/badge/stability-experimental-orange.svg?style=flat-square" alt="API stability"/>
+  </a>
+  <!-- Standard -->
+  <a href="https://github.com/feross/standard">
+    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square" alt="Standard"/>
+  </a>
+  <!-- NPM version -->
+  <a href="https://npmjs.org/package/@rill/auth">
+    <img src="https://img.shields.io/npm/v/@rill/auth.svg?style=flat-square" alt="NPM version"/>
+  </a>
+  <!-- Downloads -->
+  <a href="https://npmjs.org/package/@rill/auth">
+    <img src="https://img.shields.io/npm/dm/@rill/auth.svg?style=flat-square" alt="Downloads"/>
+  </a>
+  <!-- Gitter Chat -->
+  <a href="https://gitter.im/rill-js/rill">
+    <img src="https://img.shields.io/gitter/room/rill-js/rill.svg?style=flat-square" alt="Gitter Chat"/>
+  </a>
+</h1>
+
+Simple session authentication with login and logout for Rill.
+Creates a user cookie in the browser to track the session.
 
 # Installation
 
-#### Npm
 ```console
 npm install @rill/auth
 ```
@@ -14,33 +39,33 @@ npm install @rill/auth
 # Example
 
 ```js
-const rill    = require("rill");
-const app     = rill();
-const auth    = require("@rill/auth");
+const rill = require('rill')
+const app = rill()
+const auth = require('@rill/auth')
 
-app.use(auth());
-app.use(function (ctx, next) {
-	var user = ...;
+app.use(auth())
+app.use((ctx, next)=> {
+	var user = ...
 
 	// A user can be anything.
-	ctx.login(user);
+	ctx.login(user)
 
 	// User is attached to and a cookie created.
-	ctx.locals.user === user; // true
+	ctx.locals.user === user //-> true
 
 	// Test if a user is logged in.
-	ctx.isLoggedIn(); // true
-	ctx.isLoggedOut(); // false
+	ctx.isLoggedIn() //-> true
+	ctx.isLoggedOut() //-> false
 
 	// Removes the user cookie.
-	ctx.logout();
+	ctx.logout()
 });
 
 // Route that only allows logged in users.
-app.get("/a", auth.isLoggedIn(), ...);
+app.get('/a', auth.isLoggedIn(), ...)
 
 // Route that only allows logged out in users.
-app.get("/b", auth.isLoggedOut(), ...);
+app.get('/b', auth.isLoggedOut(), ...)
 ```
 
 # Options
@@ -61,7 +86,7 @@ Creates a middleware that will only continue if a user is logged in.
 If the `else` option is supplied it will redirect when the user is not logged in.
 
 ```js
-app.use(auth.isLoggedIn({ else: "/login" }));
+app.use(auth.isLoggedIn({ else: '/login' }))
 ```
 
 ## auth.isLoggedOut({ else })
@@ -69,7 +94,7 @@ Creates a middleware that will only continue if a user is logged out.
 If the `else` option is supplied it will redirect when the user is logged in.
 
 ```js
-app.use(auth.isLoggedOut({ else: "/dashboard" }));
+app.use(auth.isLoggedOut({ else: '/dashboard' }))
 ```
 
 ### Contributions

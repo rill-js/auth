@@ -1,36 +1,36 @@
 {
   "name": "@rill/auth",
-  "version": "1.0.2",
   "description": "Simple session login and logout for Rill.",
+  "version": "1.1.0",
   "author": "Dylan Piercey <pierceydylan@gmail.com>",
-  "main": "index.js",
-  "license": "MIT",
-  "homepage": "https://github.com/rill-js/auth",
   "bugs": "https://github.com/rill-js/auth/issues",
+  "dependencies": {
+    "ms": "^0.7.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.0.2",
+    "rill": "^0.8.10",
+    "snazzy": "^4.0.1",
+    "standard": "^8.0.0",
+    "supertest": "^2.0.0"
+  },
+  "homepage": "https://github.com/rill-js/auth",
+  "keywords": [
+    "auth",
+    "login",
+    "logout",
+    "rill",
+    "session"
+  ],
+  "license": "MIT",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/rill-js/auth"
   },
-  "keywords": [
-    "session",
-    "auth",
-    "login",
-    "logout",
-    "rill"
-  ],
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-mocha": "^2.2.0",
-    "rill": "^0.6.1",
-    "snazzy": "^4.0.0",
-    "standard": "^7.1.0",
-    "supertest": "^1.2.0"
-  },
-  "dependencies": {
-    "ms": "^0.7.1"
-  },
   "scripts": {
-    "test": "standard --verbose | snazzy && gulp test"
+    "lint": "standard --verbose | snazzy",
+    "test": "npm run lint && mocha ./test/**/*.test.js"
   },
   "standard": {
     "globals": [
