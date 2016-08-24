@@ -27,8 +27,7 @@
   </a>
 </h1>
 
-Simple session authentication with login and logout for Rill.
-Creates a user cookie in the browser to track the session.
+Simple session authentication with login and logout for Rill with support for timeouts, refreshes and more.
 
 # Installation
 
