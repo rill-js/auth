@@ -1,11 +1,13 @@
 var assert = require('assert')
 var agent = require('supertest').agent
 var Rill = require('rill')
+var rillSession = require('@rill/session')
 var auth = require('../')
 
 describe('Rill/Auth', function () {
   it('should work', function (done) {
     var request = agent(Rill()
+      .use(rillSession())
       .use(auth())
       .get('/login', respond(200, function (ctx) {
         assert(!ctx.isLoggedIn())

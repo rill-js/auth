@@ -1,17 +1,15 @@
 {
   "name": "@rill/auth",
   "description": "Simple session login and logout for Rill.",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "author": "Dylan Piercey <pierceydylan@gmail.com>",
   "bugs": "https://github.com/rill-js/auth/issues",
-  "dependencies": {
-    "ms": "^0.7.1"
-  },
   "devDependencies": {
+    "@rill/session": "^6.0.0",
     "mocha": "^3.0.2",
-    "rill": "^0.8.10",
-    "snazzy": "^4.0.1",
-    "standard": "^8.0.0",
+    "rill": "^2.1.7",
+    "snazzy": "^5.0.0",
+    "standard": "^8.1.0",
     "supertest": "^2.0.0"
   },
   "homepage": "https://github.com/rill-js/auth",
@@ -24,6 +22,9 @@
   ],
   "license": "MIT",
   "main": "index.js",
+  "peerDependencies": {
+    "@rill/session": "*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/rill-js/auth"

@@ -32,7 +32,7 @@ Simple session authentication with login and logout for Rill with support for ti
 # Installation
 
 ```console
-npm install @rill/auth
+npm install @rill/session @rill/auth
 ```
 
 # Example
@@ -40,14 +40,22 @@ npm install @rill/auth
 ```js
 const rill = require('rill')
 const app = rill()
+const session = require('@rill/session')
 const auth = require('@rill/auth')
 
+// Setup middleware
+app.use(session()) // A session is required
 app.use(auth())
+
+// Work with authentication.
 app.use((ctx, next)=> {
 	var user = ...
 
 	// A user can be anything.
-	ctx.login(user)
+	ctx.login(user, {
+    ttl: '30 minutes', // optionally override ttl option
+    refresh: false // optionally override refresh option
+  })
 
 	// User is attached to and a cookie created.
 	ctx.locals.user === user //-> true
@@ -73,8 +81,8 @@ app.get('/b', auth.isLoggedOut(), ...)
 // To enable a login that automatically refreshes and expires after 1 hour of inactivity you can use:
 {
 	"key": "different-cookie-key", // change cookie name
-	"ttl": "1 hour",
-	"refresh": true
+	"ttl": "1 hour", // change when the auth expires.
+	"refresh": true // automatically reset auth expiry on page load.
 }
 ```
 

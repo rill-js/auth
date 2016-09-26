@@ -1,37 +1,28 @@
 'use strict'
-var ms = require('ms')
 module.exports = auth
 
 /**
  * Creates a Middleware function that attaches a session user to the context.
  */
-function auth (options) {
-  options = options || {}
-  var ID = options.key || 'rill_auth'
-  var ttl = options.ttl
-  var refresh = options.refresh
-  var didLogin = false
-
-  if (typeof ttl === 'string') ttl = ms(ttl)
+function auth (config) {
+  config = config || {}
+  var ID = config.key || 'rill_auth'
 
   return function authMiddleware (ctx, next) {
-    var req = ctx.req
-    var res = ctx.res
+    var session = ctx.session
     var locals = ctx.locals
-    var cookieOptions = { path: '/' }
-
-    locals.user = req.cookies[ID]
-      ? JSON.parse(req.cookies[ID])
-      : undefined
+    ctx.assert(session, 500, '@rill/auth requires @rill/session to work.')
+    locals.user = session.get(ID)
 
     /**
      * Login a user and save them in the rill session.
      */
-    ctx.login = function login (user) {
-      didLogin = true
+    ctx.login = function login (user, options) {
+      options = options || {}
       locals.user = user
-      if (ttl) cookieOptions.expires = new Date(+new Date() + ttl)
-      res.cookie(ID, JSON.stringify(user), cookieOptions)
+      if ('ttl' in config && !('ttl' in options)) options.ttl = config.ttl
+      if ('refresh' in config && !('refresh' in options)) options.refresh = config.refresh
+      session.set(ID, user, options)
     }
 
     /**
@@ -39,7 +30,7 @@ function auth (options) {
      */
     ctx.logout = function logout () {
       locals.user = undefined
-      res.clearCookie(ID, cookieOptions)
+      session.delete(ID)
     }
 
     /**
@@ -56,12 +47,7 @@ function auth (options) {
       return locals.user == null
     }
 
-    return next().then(function () {
-      if (refresh && locals.user && !didLogin) {
-        if (ttl) cookieOptions.expires = new Date(+new Date() + ttl)
-        res.cookie(ID, req.cookies[ID], cookieOptions)
-      }
-    })
+    return next()
   }
 }
 
