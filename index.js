@@ -55,9 +55,12 @@ function auth (config) {
  * Creates a middleware that only proceeds if a user is logged in.
  */
 auth.isLoggedIn = function isLoggedIn (options) {
+  options = options || {}
   return function isLoggedInMiddleware (ctx, next) {
     if (ctx.isLoggedIn()) return next()
-    else if (options && options.else) ctx.res.redirect(options.else)
+    if (options.fail) return ctx.fail(401, options.fail)
+    if (options.redirect) return ctx.res.redirect(options.redirect)
+    if (options.fallback) return options.fallback(ctx, next)
   }
 }
 
@@ -65,8 +68,11 @@ auth.isLoggedIn = function isLoggedIn (options) {
  * Creates a middleware that only proceeds if a user is not logged in.
  */
 auth.isLoggedOut = function isLoggedOut (options) {
+  options = options || {}
   return function isLoggedOutMiddleware (ctx, next) {
     if (ctx.isLoggedOut()) return next()
-    else if (options && options.else) ctx.res.redirect(options.else)
+    if (options.fail) return ctx.fail(401, options.fail)
+    if (options.redirect) return ctx.res.redirect(options.redirect)
+    if (options.fallback) return options.fallback(ctx, next)
   }
 }

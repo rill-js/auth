@@ -3,7 +3,7 @@
   <img src="https://raw.githubusercontent.com/rill-js/rill/master/Rill-Icon.jpg" alt="Rill"/>
   <br/>
   @rill/auth
-	<br/>
+  <br/>
 
   <!-- Stability -->
   <a href="https://nodejs.org/api/documentation.html#documentation_stability_index">
@@ -49,23 +49,23 @@ app.use(auth())
 
 // Work with authentication.
 app.use((ctx, next)=> {
-	var user = ...
+  var user = ...
 
-	// A user can be anything.
-	ctx.login(user, {
+  // A user can be anything.
+  ctx.login(user, {
     ttl: '30 minutes', // optionally override ttl option
     refresh: false // optionally override refresh option
   })
 
-	// User is attached to and a cookie created.
-	ctx.locals.user === user //-> true
+  // User is attached to and a cookie created.
+  ctx.locals.user === user //-> true
 
-	// Test if a user is logged in.
-	ctx.isLoggedIn() //-> true
-	ctx.isLoggedOut() //-> false
+  // Test if a user is logged in.
+  ctx.isLoggedIn() //-> true
+  ctx.isLoggedOut() //-> false
 
-	// Removes the user cookie.
-	ctx.logout()
+  // Removes the user cookie.
+  ctx.logout()
 });
 
 // Route that only allows logged in users.
@@ -80,29 +80,60 @@ app.get('/b', auth.isLoggedOut(), ...)
 ```js
 // To enable a login that automatically refreshes and expires after 1 hour of inactivity you can use:
 {
-	"key": "different-cookie-key", // change cookie name
-	"ttl": "1 hour", // change when the auth expires.
-	"refresh": true // automatically reset auth expiry on page load.
+  "key": "different-cookie-key", // change cookie name
+  "ttl": "1 hour", // change when the auth expires.
+  "refresh": true // automatically reset auth expiry on page load.
 }
 ```
 
 # Utilities
 
-## auth.isLoggedIn({ else })
+## auth.isLoggedIn({ fail, redirect, fallback })
 Creates a middleware that will only continue if a user is logged in.
-If the `else` option is supplied it will redirect when the user is not logged in.
+
+If the `fail` option is supplied it will throw a 401 error with the provided message when the user is not logged in.
 
 ```js
-app.use(auth.isLoggedIn({ else: '/login' }))
+app.use(auth.isLoggedIn({ fail: 'You must be logged in to access the api.' }))
 ```
 
-## auth.isLoggedOut({ else })
-Creates a middleware that will only continue if a user is logged out.
-If the `else` option is supplied it will redirect when the user is logged in.
+If the `redirect` option is supplied it will redirect when the user is not logged in.
 
 ```js
-app.use(auth.isLoggedOut({ else: '/dashboard' }))
+app.use(auth.isLoggedIn({ redirect: '/login' }))
 ```
+
+If the `fallback` option is supplied it will call the fallback function when the user is not logged in.
+
+```js
+app.use(auth.isLoggedIn({ fallback: handleUserNotLoggedIn }))
+function handleUserNotLoggedIn (ctx, next) {...}
+```
+
+Otherwise nothing will happen but the next middleware will not be called.
+
+## auth.isLoggedOut({ fail, redirect, fallback })
+
+If the `fail` option is supplied it will throw a 401 error with the provided message when the user is logged in.
+
+```js
+app.use(auth.isLoggedOut({ fail: 'This page is only accessable when not logged in' }))
+```
+
+If the `redirect` option is supplied it will redirect when the user is logged in.
+
+```js
+app.use(auth.isLoggedOut({ redirect: '/dashboard' }))
+```
+
+If the `fallback` option is supplied it will call the fallback function when the user is logged in.
+
+```js
+app.use(auth.isLoggedOut({ fallback: handleUserLoggedIn }))
+function handleUserLoggedIn (ctx, next) {...}
+```
+
+Otherwise nothing will happen but the next middleware will not be called.
 
 ### Contributions
 
